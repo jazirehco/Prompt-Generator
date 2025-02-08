@@ -13,7 +13,7 @@ class PromptApp(QWidget):
 
     def initUI(self):
         self.setWindowTitle("برنامه اختصاصی پرامپت نویسی عکاسی صنعتی ناین")
-        self.setGeometry(100, 100, 800, 900)
+        self.setGeometry(100, 100, 800, 1000)
 
         layout = QVBoxLayout()
 
@@ -38,11 +38,13 @@ class PromptApp(QWidget):
         self.label_topic = QLabel("موضوع تصویر را وارد کنید:")
         layout.addWidget(self.label_topic)
         self.input_topic = QLineEdit(self)
+        self.input_topic.setFixedHeight(50)
         layout.addWidget(self.input_topic)
 
         self.label_keywords = QLabel("یا کلمات کلیدی را وارد کنید (با خط فاصله جدا کنید):")
         layout.addWidget(self.label_keywords)
         self.input_keywords = QLineEdit(self)
+        self.input_keywords.setFixedHeight(50)
         layout.addWidget(self.input_keywords)
 
         self.label_model = QLabel("مدل هوش مصنوعی برای تولید پرامپت:")
@@ -77,20 +79,11 @@ class PromptApp(QWidget):
         self.progress_bar.setValue(0)
         layout.addWidget(self.progress_bar)
 
-        self.label_farsi = QLabel("پرامپت (فارسی):")
-        layout.addWidget(self.label_farsi)
-        self.output_farsi = QTextEdit(self)
-        self.output_farsi.setReadOnly(True)
-        layout.addWidget(self.output_farsi)
-        
-        self.copy_farsi_button = QPushButton("کپی پرامپت فارسی", self)
-        self.copy_farsi_button.clicked.connect(lambda: self.copy_to_clipboard(self.output_farsi.toPlainText()))
-        layout.addWidget(self.copy_farsi_button)
-
         self.label_english = QLabel("پرامپت (انگلیسی):")
         layout.addWidget(self.label_english)
         self.output_english = QTextEdit(self)
         self.output_english.setReadOnly(True)
+        self.output_english.setFixedHeight(100)
         layout.addWidget(self.output_english)
 
         self.copy_button = QPushButton("کپی پرامپت انگلیسی", self)
@@ -108,7 +101,7 @@ class PromptApp(QWidget):
         file_dialog = QFileDialog()
         image_path, _ = file_dialog.getOpenFileName(self, "انتخاب تصویر", "", "Images (*.png *.jpg *.jpeg)")
         if image_path:
-            self.output_farsi.setPlainText(f"تصویر {image_path} آپلود شد. دکمه 'تولید پرامپت' را بزنید.")
+            self.output_english.setPlainText(f"تصویر {image_path} آپلود شد. دکمه 'تولید پرامپت' را بزنید.")
 
     def generate_prompt(self):
         topic = self.input_topic.text().strip()
@@ -123,7 +116,6 @@ class PromptApp(QWidget):
         prompt_template += f" --ar {aspect_ratio} --q 2 --v 5 --style 4c" if platform == "MidJourney" else ""
         
         translated_prompt = GoogleTranslator(source='fa', target='en').translate(prompt_template.format(topic=topic))
-        self.output_farsi.setPlainText(prompt_template.format(topic=topic))
         self.output_english.setPlainText(translated_prompt)
 
     def copy_to_clipboard(self, text):
